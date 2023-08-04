@@ -2,9 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Sequence
 
-from garmin_fit_sdk import Decoder, Stream
-
-from fit_creator.config import CADENCE_WIDTH, POWER_FTP_PCT_WIDTH
+import fit_creator.constants as C
 from fit_creator.workout.model import (
     DurationType,
     Workout,
@@ -13,10 +11,6 @@ from fit_creator.workout.model import (
 )
 
 MAX_UINT32 = 2**32 - 1
-
-
-class FitDeserialiationError(Exception):
-    pass
 
 
 def workout_to_fit_dict(workout: Workout) -> dict:
@@ -29,26 +23,6 @@ def workout_to_fit_dict(workout: Workout) -> dict:
         "workout_step_mesgs": workout_steps,
     }
     return workout_dict
-
-
-def fit_workout_to_fit_dict(fit_bytes: bytearray) -> dict:
-    stream = Stream.from_byte_array(fit_bytes)
-    decoder = Decoder(stream)
-    messages, errors = decoder.read()
-
-    if len(errors) > 0:
-        raise FitDeserialiationError(errors)
-    return _cast_types(messages)
-
-
-def _cast_types(obj: object) -> object:
-    if isinstance(obj, dict):
-        return {key: _cast_types(value) for key, value in obj.items()}
-    elif isinstance(obj, list):
-        return [_cast_types(v) for v in obj]
-    elif isinstance(obj, datetime):
-        return int(obj.timestamp())
-    return obj
 
 
 def _create_workout_steps(
@@ -79,16 +53,28 @@ def _create_workout_step(
             single_res.update(
                 **{
                     "custom_target_value_low": step.power_ftp_percent
-                    - POWER_FTP_PCT_WIDTH,
+                    - C.POWER_FTP_PCT_WIDTH,
                     "custom_target_value_high": step.power_ftp_percent
-                    + POWER_FTP_PCT_WIDTH,
+                    + C.POWER_FTP_PCT_WIDTH,
+                }
+            )
+        elif step.power_absolute is not None:  # either absolute or percent
+            single_res.update(
+                **{
+                    "custom_target_value_low": step.power_absolute
+                    + C.POWER_ABSOLUTE_OFFSET
+                    - C.POWER_ABSOLUTE_WIDTH,
+                    "custom_target_value_high": step.power_absolute
+                    + C.POWER_ABSOLUTE_OFFSET
+                    + C.POWER_ABSOLUTE_WIDTH,
                 }
             )
         if step.cadence is not None:
             single_res.update(
                 **{
-                    "secondary_custom_target_value_low": step.cadence - CADENCE_WIDTH,
-                    "secondary_custom_target_value_high": step.cadence + CADENCE_WIDTH,
+                    "secondary_custom_target_value_low": step.cadence - C.CADENCE_WIDTH,
+                    "secondary_custom_target_value_high": step.cadence
+                    + C.CADENCE_WIDTH,
                 }
             )
         return [single_res]

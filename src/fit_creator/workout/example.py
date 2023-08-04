@@ -11,27 +11,32 @@ from fit_creator.workout.model import (
 SOME_WORKOUT = Workout(
     "some_workout",
     [
+        WorkoutStep(timedelta(minutes=3), TargetType.NONE, Intensity.WARMUP),
         WorkoutStep(
-            timedelta(minutes=3), None, None, TargetType.NONE, Intensity.WARMUP
+            timedelta(minutes=2),
+            TargetType.POWER,
+            Intensity.WARMUP,
+            power_ftp_percent=80,
         ),
-        WorkoutStep(timedelta(minutes=2), 80, None, TargetType.POWER, Intensity.WARMUP),
         WorkoutStepRepeat(
             [
                 WorkoutStep(
                     timedelta(minutes=1, seconds=30),
-                    90,
-                    100,
                     TargetType.POWER,
                     Intensity.MAIN,
+                    power_ftp_percent=90,
+                    cadence=100,
                 ),
                 WorkoutStep(
-                    timedelta(minutes=3), 100, 100, TargetType.POWER, Intensity.MAIN
+                    timedelta(minutes=3),
+                    TargetType.POWER,
+                    Intensity.MAIN,
+                    power_absolute=400,
+                    cadence=120,
                 ),
             ],
             repeats=3,
         ),
-        WorkoutStep(
-            timedelta(minutes=10), None, None, TargetType.NONE, Intensity.COOLDOWN
-        ),
+        WorkoutStep(timedelta(minutes=10), TargetType.NONE, Intensity.COOLDOWN),
     ],
 )

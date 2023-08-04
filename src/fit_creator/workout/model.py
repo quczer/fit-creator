@@ -29,10 +29,19 @@ class DurationType(Enum):
 @dataclass
 class WorkoutStep(JSONSerializableMixin):
     duration: timedelta
-    power_ftp_percent: int | None
-    cadence: int | None
     target_type: TargetType
     intensity: Intensity
+    power_ftp_percent: int | None = None
+    power_absolute: int | None = None
+    cadence: int | None = None
+
+    def __post_init__(self):
+        powers_present = (self.power_absolute is not None) + (
+            self.power_ftp_percent is not None
+        )
+        assert powers_present < 2
+        if self.target_type == TargetType.POWER:
+            assert powers_present == 1
 
 
 @dataclass
