@@ -5,7 +5,12 @@ from typing import Sequence
 from garmin_fit_sdk import Decoder, Stream
 
 from fit_creator.config import CADENCE_WIDTH, POWER_FTP_PCT_WIDTH
-from fit_creator.model import DurationType, Workout, WorkoutStep, WorkoutStepRepeat
+from fit_creator.workout.model import (
+    DurationType,
+    Workout,
+    WorkoutStep,
+    WorkoutStepRepeat,
+)
 
 MAX_UINT32 = 2**32 - 1
 

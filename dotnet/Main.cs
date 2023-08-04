@@ -9,7 +9,7 @@ namespace main
             if (args.Length < 2)
             {
                 Console.WriteLine("Usage: dotnet run <json_wourkout_path> <fit_wourkout_path>");
-                CreateBikeTempoWorkout(new FileStream(args[0], FileMode.Create));
+                // CreateBikeTempoWorkout(new FileStream(args[0], FileMode.Create));
                 return;
             }
             var messages = JSONDeserializer.DeserializeWorkout(args[0]);

@@ -5,9 +5,9 @@ from pathlib import Path
 
 import click
 
-from fit_creator.config import ROOT_DIR
+from fit_creator.config import DOTNET_DIR, ROOT_DIR
 from fit_creator.converter import fit_workout_to_fit_dict, workout_to_fit_dict
-from fit_creator.utils import load_wkt
+from fit_creator.workout.utils import load_wkt
 
 
 @click.group()
@@ -66,7 +66,7 @@ def convert_json_workout_to_fit(json_file_path: Path, out_fit_path: Path) -> Non
             "dotnet",
             "run",
             "--project",
-            ROOT_DIR / "dotnet",
+            DOTNET_DIR,
             "--property",
             "WarningLevel=0",
             json_file_path,

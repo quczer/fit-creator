@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 
-from fit_creator.serializer import ClassRegistry, JSONSerializableMixin
+from fit_creator.workout.serializer import ClassRegistry, JSONSerializableMixin
 
 
 class Intensity(Enum):

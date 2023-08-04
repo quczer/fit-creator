@@ -6,3 +6,4 @@ generated
 .vscode
 dotnet/bin
 dotnet/obj
+html

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from fit_creator.model import Workout
+from fit_creator.workout.model import Workout
 
 
 def load_wkt(wkt_file_path: Path) -> Workout:

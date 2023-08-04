@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from fit_creator.model import (
+from fit_creator.workout.model import (
     Intensity,
     TargetType,
     Workout,

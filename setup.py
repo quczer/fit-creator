@@ -9,7 +9,7 @@ setup(
     license="MIT",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["garmin-fit-sdk", "click"],
+    install_requires=["garmin-fit-sdk", "click", "beautifulsoup4>=4.12"],
     extras_require={"dev": ["black", "isort", "ipykernel", "pandas>=2.0"]},
     python_requires=">=3.10",
 )
