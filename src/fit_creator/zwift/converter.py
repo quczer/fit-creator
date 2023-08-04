@@ -62,7 +62,7 @@ def _find_duration(zwift_step: str) -> timedelta:
     )
 
 
-def _find_power(zwift_step: str) -> int:
+def _find_power(zwift_step: str) -> int | None:
     match_range = re.search("from (\d+) to (\d+)W", zwift_step)
     match_simple = re.search("(\d+)W", zwift_step)
     if match_range:
@@ -73,7 +73,7 @@ def _find_power(zwift_step: str) -> int:
     return None
 
 
-def _find_power_ftp_pct(zwift_step: str) -> int:
+def _find_power_ftp_pct(zwift_step: str) -> int | None:
     match_range = re.search("from (\d+) to (\d+)% FTP", zwift_step)
     match_simple = re.search("(\d+)% FTP", zwift_step)
     if match_range:
@@ -84,7 +84,7 @@ def _find_power_ftp_pct(zwift_step: str) -> int:
     return None
 
 
-def _find_cadence(zwift_step: str) -> int:
+def _find_cadence(zwift_step: str) -> int | None:
     match = re.search("(\d+)rpm", zwift_step)
     return int(match.group(1)) if match else None
 

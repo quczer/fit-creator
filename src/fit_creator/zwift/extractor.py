@@ -1,10 +1,10 @@
-from bs4 import BeautifulSoup
+import bs4
 
 from fit_creator.zwift.model import ZwiftRawWorkout
 
 
-def exctract_zwift_workouts(html_file: str) -> list[ZwiftRawWorkout]:
-    soup = BeautifulSoup(html_file, "html.parser")
+def extract_zwift_workouts(html_file: str) -> list[ZwiftRawWorkout]:
+    soup = bs4.BeautifulSoup(html_file, "html.parser")
     workouts = []
     for article in soup.find_all("article"):
         if {"id", "class"}.issuperset(article.attrs.keys()):
@@ -17,7 +17,17 @@ def exctract_zwift_workouts(html_file: str) -> list[ZwiftRawWorkout]:
     return workouts
 
 
-def _extract_workout_names(article) -> dict[str, str | int]:
+def extract_workout_plan_urls(html_file: str) -> dict[str, str]:
+    soup = bs4.BeautifulSoup(html_file, "html.parser")
+    urls = {}
+    for card in soup.find_all("div", {"class": "card"}):
+        name = card.find("div", {"class": "card-title"}).find("p").text
+        url = card.find("div", {"class": "card-link"}).find("a").get("href")
+        urls[name] = url
+    return urls
+
+
+def _extract_workout_names(article: bs4.Tag) -> dict[str, str | int]:
     breadcrumbs = article.find("div", {"class": "breadcrumbs"})
     plan, week = breadcrumbs.find_all("a")
     workout = breadcrumbs.find("h4")
