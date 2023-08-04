@@ -14,9 +14,10 @@ class Intensity(Enum):
 
 class TargetType(Enum):
     NONE = "open"
-    POWER_3S = "power_3s"
-    POWER_10S = "power_10s"
-    POWER_30S = "power_30s"
+    POWER = "power"
+    # POWER_3S = "power_3s" # not supported by Garmin
+    # POWER_10S = "power_10s"
+    # POWER_30S = "power_30s"
 
 
 class DurationType(Enum):

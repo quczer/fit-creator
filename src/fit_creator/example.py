@@ -1,5 +1,6 @@
+from datetime import timedelta
+
 from fit_creator.model import (
-    DurationType,
     Intensity,
     TargetType,
     Workout,
@@ -10,15 +11,27 @@ from fit_creator.model import (
 SOME_WORKOUT = Workout(
     "some_workout",
     [
-        WorkoutStep(3 * 60, None, None, TargetType.NONE, Intensity.WARMUP),
-        WorkoutStep(2 * 60, 80, None, TargetType.POWER_3S, Intensity.WARMUP),
+        WorkoutStep(
+            timedelta(minutes=3), None, None, TargetType.NONE, Intensity.WARMUP
+        ),
+        WorkoutStep(timedelta(minutes=2), 80, None, TargetType.POWER, Intensity.WARMUP),
         WorkoutStepRepeat(
             [
-                WorkoutStep(1 * 60, 90, 100, TargetType.POWER_3S, Intensity.MAIN),
-                WorkoutStep(3 * 60, 100, 100, TargetType.POWER_3S, Intensity.MAIN),
+                WorkoutStep(
+                    timedelta(minutes=1, seconds=30),
+                    90,
+                    100,
+                    TargetType.POWER,
+                    Intensity.MAIN,
+                ),
+                WorkoutStep(
+                    timedelta(minutes=3), 100, 100, TargetType.POWER, Intensity.MAIN
+                ),
             ],
             repeats=3,
         ),
-        WorkoutStep(10 * 60, None, None, TargetType.NONE, Intensity.COOLDOWN),
+        WorkoutStep(
+            timedelta(minutes=10), None, None, TargetType.NONE, Intensity.COOLDOWN
+        ),
     ],
 )
