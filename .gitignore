@@ -1,9 +1,7 @@
 **/*egg-info
-workouts
-playground
-generated
 **/__pycache__
 .vscode
 dotnet/bin
 dotnet/obj
-html
+playground
+data
