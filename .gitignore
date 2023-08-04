@@ -1,3 +1,6 @@
-**/*egg-info/*
-examples/*
-playground/*
+**/*egg-info
+workouts
+playground
+generated
+**/__pycache__
+.vscode
