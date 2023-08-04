@@ -4,3 +4,5 @@ playground
 generated
 **/__pycache__
 .vscode
+dotnet/bin
+dotnet/obj
