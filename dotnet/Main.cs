@@ -12,10 +12,19 @@ namespace main
                 // CreateBikeTempoWorkout(new FileStream(args[0], FileMode.Create));
                 return;
             }
+            bool verbose = args.Length > 2 && (args[2] == "--verbose" || args[2] == "-v");
             var messages = JSONDeserializer.DeserializeWorkout(args[0]);
-            Console.WriteLine($"Deserialized {messages.Count} messages from {args[0]}");
+            if (verbose)
+            {
+                Console.WriteLine($"Deserialized {messages.Count} messages from {args[0]}");
+
+            }
             FITSerializer.SerializeWorkout(messages, new FileStream(args[1], FileMode.Create));
-            Console.WriteLine($"Saved serialized {messages.Count} messages in {args[1]}");
+            if (verbose)
+            {
+                Console.WriteLine($"Saved serialized {messages.Count} messages in {args[1]}");
+
+            }
 
         }
         static void CreateBikeTempoWorkout(FileStream file)
