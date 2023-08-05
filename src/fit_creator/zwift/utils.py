@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import requests
 
 from fit_creator.config import DATA_DIR
@@ -10,9 +12,6 @@ def download_html_page(url: str) -> str:
     return response.text
 
 
-def save_html_page(html_file: str, file_name: str, subdir: str | None = None) -> None:
-    path = DATA_DIR / "html" / "zwift"
-    if subdir is not None:
-        path = path / subdir
-    with open(path / f"{file_name}.html", "w") as file:
+def save_html_page(html_file: str, file_path: Path) -> None:
+    with open(file_path.with_suffix(".html"), "w") as file:
         file.write(html_file)

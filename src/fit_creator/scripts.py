@@ -80,17 +80,20 @@ def download_all_workout_pages_cmd(verbose: bool) -> None:
     if verbose:
         print(f"Downloading page with all workouts from {ZWIFT_WORKOUTS_URL}")
     workouts_html = download_html_page(ZWIFT_WORKOUTS_URL)
-    save_html_page(workouts_html, "workouts_main_page")
+    save_html_page(workouts_html, DATA_DIR / "html" / "zwift" / "workouts_main.html")
     urls = extract_workout_plan_urls(workouts_html)
 
     if verbose:
-        print(f"Found {len(urls)} workouts pages")
+        print(f"Found {len(urls)} workout pages")
         print(f"All workouts will be saved in {target_dir}")
     for name, url in urls.items():
         if verbose:
             print(f"Downloading page for workout {name} from {url}")
         workout_html = download_html_page(url)
-        save_html_page(workout_html, name.replace(" ", "_"), "workouts")
+        target_file_path = target_dir / f"{name.replace(' ', '_')}.html"
+        if verbose:
+            print(f"Saving in {target_file_path}")
+        save_html_page(workout_html, target_file_path)
 
 
 @click.group()
