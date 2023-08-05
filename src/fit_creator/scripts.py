@@ -9,8 +9,8 @@ import click
 from fit_creator.config import DATA_DIR, DOTNET_DIR
 from fit_creator.constants import ZWIFT_WORKOUTS_URL
 from fit_creator.fit.converter import fit_workout_to_fit_dict
+from fit_creator.utils import fix_file_name, load_wkt, save_wkt
 from fit_creator.workout.converter import workout_to_fit_dict
-from fit_creator.workout.utils import load_wkt, save_wkt
 from fit_creator.zwift.converter import zwift_raw_workout_to_wkt
 from fit_creator.zwift.extractor import (
     extract_workout_plan_urls,
@@ -63,13 +63,13 @@ def export_wkt_workout_to_fit_cmd(wkt_file_path: Path, out_fit_path: Path) -> No
 def export_zwift_workout_to_wkt_cmd(html_file_path: Path, out_wkt_dir: Path) -> None:
     with open(html_file_path, "r") as f:
         zwift_workouts = extract_zwift_workouts(f.read())
-    subdir_name = html_file_path.name.removesuffix(".html").replace(" ", "_")
+    subdir_name = fix_file_name(html_file_path.name).removesuffix(".html")
     save_dir = out_wkt_dir / subdir_name  # let the subdir be the name of the html file
     save_dir.mkdir(parents=True, exist_ok=True)
 
     for zwift_workout in zwift_workouts:
         wkt_workout = zwift_raw_workout_to_wkt(zwift_workout)
-        save_wkt(wkt_workout, save_dir / f"{wkt_workout.name.replace(' ', '_')}.wkt")
+        save_wkt(wkt_workout, save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
 
 
 def download_all_workout_pages_cmd(verbose: bool) -> None:
@@ -90,7 +90,7 @@ def download_all_workout_pages_cmd(verbose: bool) -> None:
         if verbose:
             print(f"Downloading page for workout {name} from {url}")
         workout_html = download_html_page(url)
-        target_file_path = target_dir / f"{name.replace(' ', '_')}.html"
+        target_file_path = target_dir / f"{fix_file_name(name)}.html"
         if verbose:
             print(f"Saving in {target_file_path}")
         save_html_page(workout_html, target_file_path)
@@ -128,7 +128,7 @@ def export_all_fit_files_to_jsons() -> None:
     for file in os.listdir(DATA_DIR / "generated" / "fit"):
         export_fit_workout_to_json_cmd(
             DATA_DIR / "generated" / "fit" / file,
-            DATA_DIR / "generated" / "json_from_fit" / file.replace(".fit", ".json"),
+            (DATA_DIR / "generated" / "json_from_fit" / file).with_suffix(".json"),
         )
 
 
@@ -139,10 +139,23 @@ def download_all_workout_pages(verbose: bool) -> None:
 
 
 @cli.command()
-@click.option("--html_file_path", type=Path, required=True)
+@click.option("--html_path", type=Path, required=True)
 @click.option("--out_wkt_dir", type=Path, required=True)
-def export_zwift_workout_to_wkt(html_file_path: Path, out_wkt_dir: Path) -> None:
-    export_zwift_workout_to_wkt_cmd(html_file_path, out_wkt_dir)
+@click.option("--verbose", is_flag=True, default=False)
+def export_zwift_workout_to_wkt(
+    html_path: Path, out_wkt_dir: Path, verbose: bool
+) -> None:
+    """If `html_path` is a file, it will be converted to a fit file and saved in `out_wkt_dir`.
+    If `html_path` is a directory, all wkt files in it will be converted to fit files and saved in `out_wkt_dir`.
+    """
+    if verbose:
+        print(f"Searching for .html files in {html_path}")
+    for html_file in html_path.rglob("*.html"):
+        target_dir = out_wkt_dir.joinpath(html_file.relative_to(html_path)).parent
+        if verbose:
+            print(f"Exporting {html_file} -> {target_dir}")
+        target_dir.parent.mkdir(parents=True, exist_ok=True)
+        export_zwift_workout_to_wkt_cmd(html_file, target_dir)
 
 
 @cli.command()
@@ -155,6 +168,8 @@ def export_wkt_workouts_to_fit(
     """If `wkt_path` is a file, it will be converted to a fit file and saved in `out_fit_dir`.
     If `wkt_path` is a directory, all wkt files in it will be converted to fit files and saved in `out_fit_dir`.
     """
+    if verbose:
+        print(f"Searching for .wkt files in {wkt_path}")
     for wkt_file in wkt_path.rglob("*.wkt"):
         target_file = out_fit_dir.joinpath(wkt_file.relative_to(wkt_path)).with_suffix(
             ".fit"

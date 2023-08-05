@@ -14,3 +14,7 @@ def save_wkt(workout: Workout, wkt_file_path: Path) -> None:
     with open(wkt_file_path, "w") as f:
         wkt_dict = workout.serialize()
         json.dump(wkt_dict, f, indent=2)
+
+
+def fix_file_name(name: str) -> str:
+    return name.replace(" ", "_").replace("/", ":")

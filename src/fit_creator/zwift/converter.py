@@ -52,11 +52,13 @@ def _find_repetitions(zwift_step: str) -> int | None:
 
 
 def _find_duration(zwift_step: str) -> timedelta:
+    hrs = re.search("(\d+)hr", zwift_step)
     mins = re.search("(\d+)min", zwift_step)
     secs = re.search("(\d+)sec", zwift_step)
-    if (mins is None) and (secs is None):
+    if (hrs is None) and (mins is None) and (secs is None):
         raise ZwiftParseException(f"Could not find duration for {zwift_step}")
     return timedelta(
+        hours=int(hrs.group(1)) if hrs else 0,
         minutes=int(mins.group(1)) if mins else 0,
         seconds=int(secs.group(1)) if secs else 0,
     )
@@ -95,6 +97,6 @@ def _find_target_type(zwift_step: str) -> TargetType:
 
 
 def _split_multiple_step(zwift_step: str) -> list[str]:
-    parts = re.split(r"(\d+min+[^,]+,|\d+sec+[^,]+,)", zwift_step)
+    parts = re.split(r"(\d+hr[^,]+,|\d+min[^,]+,|\d+sec[^,]+,)", zwift_step)
     assert len(parts) % 2 == 1
     return [parts[i] + parts[i + 1].removesuffix(",") for i in range(1, len(parts), 2)]

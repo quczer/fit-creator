@@ -3,17 +3,24 @@ import bs4
 from fit_creator.zwift.model import ZwiftRawWorkout
 
 
+class ZwiftHtmlExtractionException(Exception):
+    pass
+
+
 def extract_zwift_workouts(html_file: str) -> list[ZwiftRawWorkout]:
     soup = bs4.BeautifulSoup(html_file, "html.parser")
     workouts = []
     for article in soup.find_all("article"):
-        if {"id", "class"}.issuperset(article.attrs.keys()):
-            data = dict(
-                **_extract_workout_names(article),
-                steps=_extract_workout_routine(article)
-            )
-            workouts.append(ZwiftRawWorkout(**data))
-        # break
+        try:
+            if {"id", "class"}.issuperset(article.attrs.keys()):
+                data = dict(
+                    **_extract_workout_names(article),
+                    steps=_extract_workout_routine(article)
+                )
+                workouts.append(ZwiftRawWorkout(**data))
+        except Exception as e:
+            # raise ZwiftHtmlExtractionException from e # TODO: fix later
+            print("exception", e)
     return workouts
 
 
