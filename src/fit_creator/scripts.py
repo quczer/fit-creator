@@ -14,7 +14,7 @@ from fit_creator.workout.converter import workout_to_fit_dict
 from fit_creator.zwift.converter import zwift_raw_workout_to_wkt
 from fit_creator.zwift.extractor import (
     extract_workout_plan_urls,
-    extract_zwift_workouts,
+    extract_zwift_bike_workouts,
 )
 from fit_creator.zwift.utils import download_html_page, save_html_page
 
@@ -62,14 +62,20 @@ def export_wkt_workout_to_fit_cmd(wkt_file_path: Path, out_fit_path: Path) -> No
 
 def export_zwift_workout_to_wkt_cmd(html_file_path: Path, out_wkt_dir: Path) -> None:
     with open(html_file_path, "r") as f:
-        zwift_workouts = extract_zwift_workouts(f.read())
+        zwift_workouts = extract_zwift_bike_workouts(f.read())
     subdir_name = fix_file_name(html_file_path.name).removesuffix(".html")
     save_dir = out_wkt_dir / subdir_name  # let the subdir be the name of the html file
     save_dir.mkdir(parents=True, exist_ok=True)
 
+    skipped = []
     for zwift_workout in zwift_workouts:
         wkt_workout = zwift_raw_workout_to_wkt(zwift_workout)
+        if wkt_workout is None:
+            skipped.append(f"{zwift_workout.plan_name} - {zwift_workout.workout_name}")
+            continue
         save_wkt(wkt_workout, save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
+    print("Skipped workouts:")
+    print("\n".join(skipped))
 
 
 def download_all_workout_pages_cmd(verbose: bool) -> None:
