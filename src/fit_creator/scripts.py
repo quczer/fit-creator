@@ -156,7 +156,8 @@ def export_wkt_workouts_to_fit(
         target_file = out_fit_dir.joinpath(wkt_file.relative_to(wkt_path)).with_suffix(
             ".fit"
         )
-        print(f"Converting {wkt_file} -> {target_file}")
+        if verbose:
+            print(f"Converting {wkt_file} -> {target_file}")
         target_file.parent.mkdir(parents=True, exist_ok=True)
         export_wkt_workout_to_fit_cmd(wkt_file, target_file)
 
