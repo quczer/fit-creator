@@ -19,7 +19,7 @@ def extract_zwift_workouts(html_file: str) -> list[ZwiftRawWorkout]:
                 )
                 workouts.append(ZwiftRawWorkout(**data))
         except Exception as e:
-            # raise ZwiftHtmlExtractionException from e # TODO: fix later
+            raise ZwiftHtmlExtractionException from e  # TODO: fix later
             print("exception", e)
     return workouts
 
@@ -34,13 +34,14 @@ def extract_workout_plan_urls(html_file: str) -> dict[str, str]:
     return urls
 
 
-def _extract_workout_names(article: bs4.Tag) -> dict[str, str | int]:
+def _extract_workout_names(article: bs4.Tag) -> dict[str, str | None]:
     breadcrumbs = article.find("div", {"class": "breadcrumbs"})
-    plan, week = breadcrumbs.find_all("a")
+    a_tags = breadcrumbs.find_all("a")
+    plan, week = a_tags if len(a_tags) > 1 else (a_tags[0], None)
     workout = breadcrumbs.find("h4")
     return {
         "plan_name": plan.text.strip(),
-        "week_name": week.text.strip(),
+        "week_name": week.text.strip() if week else None,
         "workout_name": workout.text.strip(),
     }
 
