@@ -17,4 +17,4 @@ def save_wkt(workout: Workout, wkt_file_path: Path) -> None:
 
 
 def fix_file_name(name: str) -> str:
-    return name.replace(" ", "_").replace("/", ":")
+    return name.replace(" ", "_").replace("/", "|")
