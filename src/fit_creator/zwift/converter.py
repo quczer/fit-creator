@@ -16,7 +16,7 @@ class ZwiftParseException(Exception):
 
 
 def zwift_raw_workout_to_wkt(zwift_workout: ZwiftRawWorkout) -> Workout:
-    name = f"{zwift_workout.plan_name} - {zwift_workout.week_name} - {zwift_workout.workout_name} (Zwift - TEST)"
+    name = f"{zwift_workout.plan_name} - {zwift_workout.week_name} - {zwift_workout.workout_name}"
     steps = [_zwift_to_workout_step(step) for step in zwift_workout.steps]
     return Workout(name=name, steps=steps)
 

@@ -32,9 +32,9 @@ def _extract_workout_names(article: bs4.Tag) -> dict[str, str | int]:
     plan, week = breadcrumbs.find_all("a")
     workout = breadcrumbs.find("h4")
     return {
-        "plan_name": plan.text,
-        "week_name": week.text,
-        "workout_name": workout.text,
+        "plan_name": plan.text.strip(),
+        "week_name": week.text.strip(),
+        "workout_name": workout.text.strip(),
     }
 
 
