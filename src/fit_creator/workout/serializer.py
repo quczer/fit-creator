@@ -25,10 +25,8 @@ class JSONSerializableMixin:
 
     @staticmethod
     def _serialize(obj: Any) -> Any:
-        # print(f"{type(obj) = } {obj = }")
         if type(obj) in ClassRegistry.class_registry:  # registered classes
             class_name = ClassRegistry.class_registry[type(obj)]
-            # print(f"creating registred class {class_name = } from {obj = }")
             return {
                 class_name: JSONSerializableMixin._serialize(
                     {f.name: getattr(obj, f.name) for f in fields(obj)}
@@ -68,7 +66,6 @@ class JSONSerializableMixin:
 
     @staticmethod
     def _create_dataclass(cls: Type, obj: dict) -> Any:
-        # print(f"creating dataclass {cls = } from {obj = }")
         assert is_dataclass(cls), "only dataclasses allowed here"
         assert isinstance(obj, dict)
         self_dict: dict = {}
@@ -81,8 +78,6 @@ class JSONSerializableMixin:
         if len(self_dict) != len(obj):
             raise ValueError(f"too many fields in {obj = }")
 
-        # ret = cls(**self_dict)
-        # print(ret)
         return cls(**self_dict)
 
     @staticmethod
