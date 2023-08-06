@@ -9,8 +9,9 @@ import click
 from fit_creator.config import DATA_DIR, DOTNET_DIR
 from fit_creator.constants import ZWIFT_WORKOUTS_URL
 from fit_creator.fit.converter import fit_workout_to_fit_dict
-from fit_creator.utils import fix_file_name, load_wkt, save_wkt
+from fit_creator.utils import fix_file_name
 from fit_creator.workout.converter import workout_to_fit_dict
+from fit_creator.workout.model import Workout
 from fit_creator.zwift.converter import zwift_raw_workout_to_wkt
 from fit_creator.zwift.extractor import (
     extract_workout_plan_urls,
@@ -29,7 +30,7 @@ def export_fit_workout_to_json_cmd(fit_file_path: Path, out_json_path: Path) -> 
 
 
 def export_wkt_workout_to_json_cmd(wkt_file_path: Path, out_json_path: Path) -> None:
-    workout = load_wkt(wkt_file_path)
+    workout = Workout.load(wkt_file_path)
     fit_dict = workout_to_fit_dict(workout)
     with open(out_json_path, "w") as f:
         json.dump(fit_dict, f, indent=2)
@@ -73,7 +74,7 @@ def export_zwift_workout_to_wkt_cmd(html_file_path: Path, out_wkt_dir: Path) -> 
         if wkt_workout is None:
             skipped.append(f"{zwift_workout.plan_name} - {zwift_workout.workout_name}")
             continue
-        save_wkt(wkt_workout, save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
+        wkt_workout.save(save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
     print("Skipped workouts:")
     print("\n".join(skipped))
 

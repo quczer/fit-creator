@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 
-from fit_creator.workout.serializer import ClassRegistry, JSONSerializableMixin
+from fit_creator.workout.serializer import serializable
 
 
 class Intensity(Enum):
@@ -26,8 +26,9 @@ class DurationType(Enum):
     REPEAT = "repeat_until_steps_cmplt"
 
 
+@serializable
 @dataclass
-class WorkoutStep(JSONSerializableMixin):
+class WorkoutStep:
     duration: timedelta
     target_type: TargetType
     intensity: Intensity
@@ -44,19 +45,16 @@ class WorkoutStep(JSONSerializableMixin):
             assert powers_present == 1
 
 
+@serializable
 @dataclass
-class WorkoutStepRepeat(JSONSerializableMixin):
+class WorkoutStepRepeat:
     steps: list[WorkoutStep]
     repeats: int
 
 
+@serializable
 @dataclass
-class Workout(JSONSerializableMixin):
+class Workout:
     name: str
     steps: list[WorkoutStep | WorkoutStepRepeat]
     created: datetime = datetime.now()
-
-
-ClassRegistry.register_class(Workout)
-ClassRegistry.register_class(WorkoutStep)
-ClassRegistry.register_class(WorkoutStepRepeat)
