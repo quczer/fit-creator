@@ -6,8 +6,8 @@ from fit_creator.scripts import (
     download_all_workout_pages_cmd,
     export_wkt_workout_to_fit_cmd,
     export_zwift_workout_to_wkt_cmd,
+    fix_file_name,
 )
-from fit_creator.utils import fix_file_name
 
 
 @click.group()

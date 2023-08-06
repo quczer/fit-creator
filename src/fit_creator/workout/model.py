@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 
-from fit_creator.workout.serializer import serializable
+from fit_creator.workout.serializable import serializable
 
 
 class Intensity(Enum):

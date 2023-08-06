@@ -8,7 +8,6 @@ import click
 from fit_creator.config import DATA_DIR, DOTNET_DIR
 from fit_creator.constants import ZWIFT_WORKOUTS_URL
 from fit_creator.fit.converter import fit_workout_to_fit_dict
-from fit_creator.utils import fix_file_name
 from fit_creator.workout.converter import workout_to_fit_dict
 from fit_creator.workout.model import Workout
 from fit_creator.zwift.converter import zwift_raw_workout_to_wkt
@@ -105,6 +104,10 @@ def download_all_workout_pages_cmd(verbose: bool) -> None:
         if verbose:
             print(f"Saving in {target_file_path}")
         save_html_page(workout_html, target_file_path)
+
+
+def fix_file_name(name: str) -> str:
+    return name.replace(" ", "_").replace("/", "|")
 
 
 @click.group()
