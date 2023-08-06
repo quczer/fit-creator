@@ -149,7 +149,7 @@ def download_all_workout_pages(verbose: bool) -> None:
 @click.option("--html_path", type=Path, required=True)
 @click.option("--out_wkt_dir", type=Path, required=True)
 @click.option("--verbose", is_flag=True, default=False)
-def export_zwift_workout_to_wkt(
+def export_zwift_workouts_to_wkt(
     html_path: Path, out_wkt_dir: Path, verbose: bool
 ) -> None:
     """If `html_path` is a file, it will be converted to a fit file and saved in `out_wkt_dir`.
@@ -157,7 +157,9 @@ def export_zwift_workout_to_wkt(
     """
     if verbose:
         print(f"Searching for .html files in {html_path}")
-    for html_file in html_path.rglob("*.html"):
+
+    files = [html_path] if html_path.is_file() else html_path.rglob("*.html")
+    for html_file in files:
         target_dir = out_wkt_dir.joinpath(html_file.relative_to(html_path)).parent
         if verbose:
             print(f"Exporting {html_file} -> {target_dir}")
@@ -177,7 +179,8 @@ def export_wkt_workouts_to_fit(
     """
     if verbose:
         print(f"Searching for .wkt files in {wkt_path}")
-    for wkt_file in wkt_path.rglob("*.wkt"):
+    files = [wkt_path] if wkt_path.is_file() else wkt_path.rglob("*.wkt")
+    for wkt_file in files:
         target_file = out_fit_dir.joinpath(wkt_file.relative_to(wkt_path)).with_suffix(
             ".fit"
         )
