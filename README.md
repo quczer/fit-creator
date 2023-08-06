@@ -6,12 +6,12 @@
 1. Install any C# executable and add `dotnet/Dynasream.FIT.Portable.dll` dependency
 2. Install `fit_creator` python package e.g. using `pip` with
     ```
-    $ pip install .
+    pip install .
     ```
 ## 2. Basic usage
-Just run
+Just shell-execute
 ```
-$ run.sh
+run.sh
 ```
 It does three steps:
 1. Download all available html workout pages from `whatsonzwift.com/workouts` and saves them in `data/html/zwift` directory (somewhat time consuming - the internet is the bottleneck).
