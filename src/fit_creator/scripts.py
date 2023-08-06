@@ -75,8 +75,9 @@ def export_zwift_workout_to_wkt_cmd(html_file_path: Path, out_wkt_dir: Path) -> 
             skipped.append(f"{zwift_workout.plan_name} - {zwift_workout.workout_name}")
             continue
         wkt_workout.save(save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
-    print("Skipped workouts:")
-    print("\n".join(skipped))
+    if len(skipped) > 0:
+        print("Skipped workouts:")
+        print("\n".join(skipped))
 
 
 def download_all_workout_pages_cmd(verbose: bool) -> None:

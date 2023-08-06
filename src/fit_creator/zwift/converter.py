@@ -1,6 +1,7 @@
 import re
 from datetime import timedelta
 
+import fit_creator.constants as C
 from fit_creator.workout.model import (
     Intensity,
     TargetType,
@@ -20,7 +21,8 @@ def zwift_raw_workout_to_wkt(zwift_workout: ZwiftRawWorkout) -> Workout | None:
     try:
         steps = [_zwift_to_workout_step(step) for step in zwift_workout.steps]
     except ZwiftParseException as e:
-        # print(f"Could not parse {zwift_workout.workout_name}: {e}")
+        print(f"Could not parse {zwift_workout.workout_name}: {e}")
+        raise
         return None
     return Workout(name=name, steps=steps)
 
@@ -38,7 +40,7 @@ def _zwift_to_workout_step(zwift_step: str) -> WorkoutStep | WorkoutStepRepeat:
         target_type = _find_target_type(zwift_step)
         # print(f"{zwift_step = }")
         # print(power, power_ftp_pct)
-        if ~((power is None) ^ (power_ftp_pct is None)):
+        if (power is not None) and (power_ftp_pct is not None):
             raise ZwiftParseException(
                 f"{power = } and {power_ftp_pct = } in {zwift_step}"
             )
@@ -71,7 +73,7 @@ def _find_duration(zwift_step: str) -> timedelta:
 
 
 def _find_power(zwift_step: str) -> int | None:
-    match_range = re.search("from\w+(\d+)\w+to\w+(\d+)W", zwift_step)
+    match_range = re.search("from\s+(\d+)\s+to\s+(\d+)W", zwift_step)
     match_simple = re.search("(\d+)W", zwift_step)
     if match_range:
         # workaround for range
@@ -83,12 +85,14 @@ def _find_power(zwift_step: str) -> int | None:
 
 def _find_power_ftp_pct(zwift_step: str) -> int | None:
     match_range = re.search("from (\d+) to (\d+)% FTP", zwift_step)
-    match_simple = re.search("(\d+)%\w+FTP", zwift_step)
+    match_simple = re.search("(\d+)%\s+FTP", zwift_step)
     if match_range:
         # workaround for range
         return (int(match_range.group(1)) + int(match_range.group(2))) // 2
     if match_simple:
         return int(match_simple.group(1))
+    if "MAX" in zwift_step:
+        return C.POWER_MAX
     return None
 
 
