@@ -1,5 +1,4 @@
 import json
-import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -61,20 +60,24 @@ def export_wkt_workout_to_fit_cmd(wkt_file_path: Path, out_fit_path: Path) -> No
         export_json_workout_to_fit_cmd(tmp_json_path, out_fit_path, False)
 
 
-def export_zwift_workout_to_wkt_cmd(html_file_path: Path, out_wkt_dir: Path) -> None:
+def export_zwift_workout_to_wkt_cmd(html_file_path: Path, target_dir: Path) -> None:
     with open(html_file_path, "r") as f:
         zwift_workouts = extract_zwift_bike_workouts(f.read())
-    subdir_name = fix_file_name(html_file_path.name).removesuffix(".html")
-    save_dir = out_wkt_dir / subdir_name  # let the subdir be the name of the html file
-    save_dir.mkdir(parents=True, exist_ok=True)
 
+    wkt_workouts = []
     skipped = []
     for zwift_workout in zwift_workouts:
         wkt_workout = zwift_raw_workout_to_wkt(zwift_workout)
         if wkt_workout is None:
             skipped.append(f"{zwift_workout.plan_name} - {zwift_workout.workout_name}")
             continue
-        wkt_workout.save(save_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
+        else:
+            wkt_workouts.append(wkt_workout)
+    if len(wkt_workouts) > 0:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for wkt_workout in wkt_workouts:
+            wkt_workout.save(target_dir / f"{fix_file_name(wkt_workout.name)}.wkt")
+
     if len(skipped) > 0:
         print("Skipped workouts:")
         print("\n".join(skipped))
@@ -129,66 +132,6 @@ def export_wkt_workout_to_json(wkt_file_path: Path, out_json_path: Path) -> None
 @click.option("--out_fit_path", type=Path, required=True)
 def export_json_workout_to_fit(json_file_path: Path, out_fit_path: Path) -> None:
     export_json_workout_to_fit_cmd(json_file_path, out_fit_path, True)
-
-
-@cli.command()
-def export_all_fit_files_to_jsons() -> None:
-    for file in os.listdir(DATA_DIR / "generated" / "fit"):
-        export_fit_workout_to_json_cmd(
-            DATA_DIR / "generated" / "fit" / file,
-            (DATA_DIR / "generated" / "json_from_fit" / file).with_suffix(".json"),
-        )
-
-
-@cli.command()
-@click.option("--verbose", is_flag=True, default=False)
-def download_all_workout_pages(verbose: bool) -> None:
-    download_all_workout_pages_cmd(verbose)
-
-
-@cli.command()
-@click.option("--html_path", type=Path, required=True)
-@click.option("--out_wkt_dir", type=Path, required=True)
-@click.option("--verbose", is_flag=True, default=False)
-def export_zwift_workouts_to_wkt(
-    html_path: Path, out_wkt_dir: Path, verbose: bool
-) -> None:
-    """If `html_path` is a file, it will be converted to a fit file and saved in `out_wkt_dir`.
-    If `html_path` is a directory, all wkt files in it will be converted to fit files and saved in `out_wkt_dir`.
-    """
-    if verbose:
-        print(f"Searching for .html files in {html_path}")
-
-    files = [html_path] if html_path.is_file() else html_path.rglob("*.html")
-    for html_file in files:
-        target_dir = out_wkt_dir.joinpath(html_file.relative_to(html_path)).parent
-        if verbose:
-            print(f"Exporting {html_file} -> {target_dir}")
-        target_dir.parent.mkdir(parents=True, exist_ok=True)
-        export_zwift_workout_to_wkt_cmd(html_file, target_dir)
-
-
-@cli.command()
-@click.option("--wkt_path", type=Path, required=True)
-@click.option("--out_fit_dir", type=Path, required=True)
-@click.option("--verbose", is_flag=True, default=False)
-def export_wkt_workouts_to_fit(
-    wkt_path: Path, out_fit_dir: Path, verbose: bool
-) -> None:
-    """If `wkt_path` is a file, it will be converted to a fit file and saved in `out_fit_dir`.
-    If `wkt_path` is a directory, all wkt files in it will be converted to fit files and saved in `out_fit_dir`.
-    """
-    if verbose:
-        print(f"Searching for .wkt files in {wkt_path}")
-    files = [wkt_path] if wkt_path.is_file() else wkt_path.rglob("*.wkt")
-    for wkt_file in files:
-        target_file = out_fit_dir.joinpath(wkt_file.relative_to(wkt_path)).with_suffix(
-            ".fit"
-        )
-        if verbose:
-            print(f"Converting {wkt_file} -> {target_file}")
-        target_file.parent.mkdir(parents=True, exist_ok=True)
-        export_wkt_workout_to_fit_cmd(wkt_file, target_file)
 
 
 if __name__ == "__main__":

@@ -21,8 +21,8 @@ def zwift_raw_workout_to_wkt(zwift_workout: ZwiftRawWorkout) -> Workout | None:
     try:
         steps = [_zwift_to_workout_step(step) for step in zwift_workout.steps]
     except ZwiftParseException as e:
-        print(f"Could not parse {zwift_workout.workout_name}: {e}")
-        raise
+        # print(f"Could not parse {zwift_workout.workout_name}: {e}")
+        # raise
         return None
     return Workout(name=name, steps=steps)
 
@@ -38,8 +38,6 @@ def _zwift_to_workout_step(zwift_step: str) -> WorkoutStep | WorkoutStepRepeat:
         cadence = _find_cadence(zwift_step)
         duration = _find_duration(zwift_step)
         target_type = _find_target_type(zwift_step)
-        # print(f"{zwift_step = }")
-        # print(power, power_ftp_pct)
         if (power is not None) and (power_ftp_pct is not None):
             raise ZwiftParseException(
                 f"{power = } and {power_ftp_pct = } in {zwift_step}"
