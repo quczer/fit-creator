@@ -7,6 +7,7 @@ setup(
     author="Michal Kucharczyk",
     author_email="kucharczi@gmail.com",
     license="MIT",
+    license_file="LICENSE",
     packages=find_packages("src"),
     package_dir={"": "src"},
     install_requires=["garmin-fit-sdk", "click", "beautifulsoup4>=4.12", "requests>=2.31.0"],
