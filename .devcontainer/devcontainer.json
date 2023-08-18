@@ -1,0 +1,21 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+    "name": "${localWorkspaceFolderBasename}",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "USERNAME": "${localEnv:USER}"
+        }
+    },
+    "runArgs": [
+        "--name=${localEnv:USER}_${localWorkspaceFolderBasename}",
+        "--network=bridge"
+    ],
+    // Commands to run after the container is created
+    "onCreateCommand": "pip install -e .",
+    // Mount workspace directory
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    // Change source path to your ml-research repo path
+    "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}"
+}
