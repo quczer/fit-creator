@@ -1,9 +1,10 @@
 # Python (and C#) project for scraping ZWIFT workouts and converting them to FIT Garmin workouts
 
 ## 1. Installation
-### Using docker
+### Using vscode devcontainers
+Ctrl+Shift+P > Open Folder in container
 ### Manual
-1. Install any C# executable and add `dotnet/Dynasream.FIT.Portable.dll` dependency
+1. Install any C# executable and add `dotnet/Dynastream.FIT.Portable.dll` dependency
 2. Install `fit_creator` python package e.g. using `pip` with
     ```
     pip install .
